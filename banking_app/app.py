@@ -424,6 +424,5 @@ def generate_transaction_number():
             return number
 
 
-
 if __name__ == '__main__':
     app.run(debug=True)

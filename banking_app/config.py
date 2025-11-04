@@ -49,7 +49,6 @@ class TestingConfig(Config):
     TESTING = True
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///test_banking_app.db'
-    WTF_CSRF_ENABLED = False
 
 
 class ProductionConfig(Config):
