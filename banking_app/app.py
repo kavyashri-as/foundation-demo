@@ -379,7 +379,9 @@ def register_routes(app):
                 'total_interest': round(total_interest, 2)
             })
         except Exception as e:
-            return jsonify({'error': str(e)}), 400
+            # Log the error for debugging but don't expose details to user
+            app.logger.error(f'Loan calculation error: {str(e)}')
+            return jsonify({'error': 'Invalid loan parameters'}), 400
     
     
     # ==================== Error Handlers ====================
@@ -425,4 +427,6 @@ def generate_transaction_number():
 
 
 if __name__ == '__main__':
+    # Debug mode is ONLY for local development
+    # In production, use a WSGI server (gunicorn, uwsgi) with debug=False
     app.run(debug=True)
