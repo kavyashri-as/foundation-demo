@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Apply for Loan - Banking Application{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="bi bi-cash-stack"></i> Apply for Loan</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('apply_loan') }}" id="loanForm">
+                    <div class="mb-3">
+                        <label for="account_id" class="form-label">Select Account *</label>
+                        <select class="form-select" id="account_id" name="account_id" required>
+                            <option value="">Select account...</option>
+                            {% for account in accounts %}
+                            <option value="{{ account.id }}">
+                                {{ account.account_number }} - {{ account.customer_name }} (Balance: ${{ "%.2f"|format(account.balance) }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="loan_type" class="form-label">Loan Type *</label>
+                        <select class="form-select" id="loan_type" name="loan_type" required>
+                            <option value="">Select loan type...</option>
+                            {% for type in loan_types %}
+                            <option value="{{ type }}">{{ type.title() }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="principal_amount" class="form-label">Loan Amount *</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="principal_amount" name="principal_amount" 
+                                   min="1000" max="1000000" step="100" required>
+                        </div>
+                        <small class="form-text text-muted">Between $1,000 and $1,000,000</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="interest_rate" class="form-label">Annual Interest Rate (%) *</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="interest_rate" name="interest_rate" 
+                                   min="3.0" max="25.0" step="0.1" required>
+                            <span class="input-group-text">%</span>
+                        </div>
+                        <small class="form-text text-muted">Between 3.0% and 25.0%</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="term_months" class="form-label">Loan Term (Months) *</label>
+                        <input type="number" class="form-control" id="term_months" name="term_months" 
+                               min="6" max="360" step="1" required>
+                        <small class="form-text text-muted">Between 6 and 360 months</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="purpose" class="form-label">Loan Purpose</label>
+                        <textarea class="form-control" id="purpose" name="purpose" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="card bg-light mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Estimated Monthly Payment</h5>
+                            <h3 id="monthlyPayment" class="text-primary">$0.00</h3>
+                            <small class="text-muted">Update loan details to calculate</small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('list_loans') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Submit Application
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-info-circle"></i> Loan Types</h5>
+                <ul class="list-unstyled">
+                    <li><strong>Personal:</strong> For personal expenses</li>
+                    <li><strong>Home:</strong> For home purchase or renovation</li>
+                    <li><strong>Auto:</strong> For vehicle purchase</li>
+                    <li><strong>Business:</strong> For business operations</li>
+                    <li><strong>Education:</strong> For educational expenses</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-shield-check"></i> Requirements</h5>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check"></i> Valid account required</li>
+                    <li><i class="bi bi-check"></i> Loan amount: $1K - $1M</li>
+                    <li><i class="bi bi-check"></i> Interest rate: 3% - 25%</li>
+                    <li><i class="bi bi-check"></i> Term: 6 - 360 months</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function calculateMonthlyPayment() {
+    const principal = parseFloat(document.getElementById('principal_amount').value) || 0;
+    const annualRate = parseFloat(document.getElementById('interest_rate').value) || 0;
+    const termMonths = parseInt(document.getElementById('term_months').value) || 0;
+    
+    if (principal > 0 && termMonths > 0) {
+        const monthlyRate = annualRate / 100 / 12;
+        let monthlyPayment;
+        
+        if (monthlyRate === 0) {
+            monthlyPayment = principal / termMonths;
+        } else {
+            const numerator = monthlyRate * Math.pow(1 + monthlyRate, termMonths);
+            const denominator = Math.pow(1 + monthlyRate, termMonths) - 1;
+            monthlyPayment = principal * (numerator / denominator);
+        }
+        
+        document.getElementById('monthlyPayment').textContent = '$' + monthlyPayment.toFixed(2);
+    }
+}
+
+document.getElementById('principal_amount').addEventListener('input', calculateMonthlyPayment);
+document.getElementById('interest_rate').addEventListener('input', calculateMonthlyPayment);
+document.getElementById('term_months').addEventListener('input', calculateMonthlyPayment);
+</script>
+{% endblock %}

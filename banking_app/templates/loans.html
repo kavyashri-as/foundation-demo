@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Loans - Banking Application{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="bi bi-cash-stack"></i> Loans</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('apply_loan') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Apply for Loan
+        </a>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('list_loans', status='all') }}" 
+               class="btn btn-outline-primary {{ 'active' if current_status == 'all' else '' }}">
+                All
+            </a>
+            <a href="{{ url_for('list_loans', status='pending') }}" 
+               class="btn btn-outline-warning {{ 'active' if current_status == 'pending' else '' }}">
+                Pending
+            </a>
+            <a href="{{ url_for('list_loans', status='approved') }}" 
+               class="btn btn-outline-info {{ 'active' if current_status == 'approved' else '' }}">
+                Approved
+            </a>
+            <a href="{{ url_for('list_loans', status='active') }}" 
+               class="btn btn-outline-success {{ 'active' if current_status == 'active' else '' }}">
+                Active
+            </a>
+            <a href="{{ url_for('list_loans', status='closed') }}" 
+               class="btn btn-outline-secondary {{ 'active' if current_status == 'closed' else '' }}">
+                Closed
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if loans %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Loan Number</th>
+                <th>Account</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Principal</th>
+                <th>Outstanding</th>
+                <th>Monthly Payment</th>
+                <th>Application Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for loan in loans %}
+            <tr>
+                <td><strong>{{ loan.loan_number }}</strong></td>
+                <td>{{ loan.account.customer_name }}<br><small>{{ loan.account.account_number }}</small></td>
+                <td><span class="badge bg-secondary">{{ loan.loan_type.value }}</span></td>
+                <td>
+                    {% if loan.loan_status.value == 'pending' %}
+                        <span class="badge bg-warning">{{ loan.loan_status.value }}</span>
+                    {% elif loan.loan_status.value == 'approved' %}
+                        <span class="badge bg-info">{{ loan.loan_status.value }}</span>
+                    {% elif loan.loan_status.value == 'active' %}
+                        <span class="badge bg-success">{{ loan.loan_status.value }}</span>
+                    {% elif loan.loan_status.value == 'closed' %}
+                        <span class="badge bg-secondary">{{ loan.loan_status.value }}</span>
+                    {% else %}
+                        <span class="badge bg-danger">{{ loan.loan_status.value }}</span>
+                    {% endif %}
+                </td>
+                <td>${{ "%.2f"|format(loan.principal_amount) }}</td>
+                <td class="{{ 'text-success' if loan.outstanding_balance == 0 else '' }}">
+                    ${{ "%.2f"|format(loan.outstanding_balance) }}
+                </td>
+                <td>${{ "%.2f"|format(loan.monthly_payment) }}</td>
+                <td>{{ loan.application_date.strftime('%Y-%m-%d') }}</td>
+                <td>
+                    <a href="{{ url_for('loan_detail', loan_id=loan.id) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye"></i> View
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i> No loans found. 
+    <a href="{{ url_for('apply_loan') }}" class="alert-link">Apply for your first loan</a>
+</div>
+{% endif %}
+{% endblock %}
