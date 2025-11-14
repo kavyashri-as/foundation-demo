@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Account Details - Banking Application{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="bi bi-person-circle"></i> Account Details</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('list_accounts') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Accounts
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Account Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th>Account Number:</th>
+                        <td><strong>{{ account.account_number }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Customer Name:</th>
+                        <td>{{ account.customer_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ account.customer_email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Account Type:</th>
+                        <td><span class="badge bg-info">{{ account.account_type.value }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Current Balance:</th>
+                        <td>
+                            <h4 class="{{ 'text-success' if account.balance >= 0 else 'text-danger' }}">
+                                ${{ "%.2f"|format(account.balance) }}
+                            </h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Created Date:</th>
+                        <td>{{ account.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('apply_loan') }}?account_id={{ account.id }}" class="btn btn-primary">
+                        <i class="bi bi-cash-stack"></i> Apply for Loan
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-cash-stack"></i> Active Loans</h5>
+            </div>
+            <div class="card-body">
+                {% if loans %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Loan Number</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Principal</th>
+                                <th>Outstanding</th>
+                                <th>Monthly Payment</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in loans %}
+                            <tr>
+                                <td><strong>{{ loan.loan_number }}</strong></td>
+                                <td><span class="badge bg-secondary">{{ loan.loan_type.value }}</span></td>
+                                <td>
+                                    {% if loan.loan_status.value == 'pending' %}
+                                        <span class="badge bg-warning">{{ loan.loan_status.value }}</span>
+                                    {% elif loan.loan_status.value == 'approved' %}
+                                        <span class="badge bg-info">{{ loan.loan_status.value }}</span>
+                                    {% elif loan.loan_status.value == 'active' %}
+                                        <span class="badge bg-success">{{ loan.loan_status.value }}</span>
+                                    {% elif loan.loan_status.value == 'closed' %}
+                                        <span class="badge bg-secondary">{{ loan.loan_status.value }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ loan.loan_status.value }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>${{ "%.2f"|format(loan.principal_amount) }}</td>
+                                <td>${{ "%.2f"|format(loan.outstanding_balance) }}</td>
+                                <td>${{ "%.2f"|format(loan.monthly_payment) }}</td>
+                                <td>
+                                    <a href="{{ url_for('loan_detail', loan_id=loan.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No loans associated with this account.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-list-ul"></i> Recent Transactions</h5>
+            </div>
+            <div class="card-body">
+                {% if transactions %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Transaction #</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Balance After</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for txn in transactions %}
+                            <tr>
+                                <td>{{ txn.transaction_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td><small>{{ txn.transaction_number }}</small></td>
+                                <td><span class="badge bg-secondary">{{ txn.transaction_type.value }}</span></td>
+                                <td class="{{ 'text-success' if txn.transaction_type.value in ['deposit', 'loan_disbursement'] else 'text-danger' }}">
+                                    ${{ "%.2f"|format(txn.amount) }}
+                                </td>
+                                <td>${{ "%.2f"|format(txn.balance_after) if txn.balance_after else 'N/A' }}</td>
+                                <td>{{ txn.description }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No transactions found for this account.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
