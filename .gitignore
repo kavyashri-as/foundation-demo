@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+*.egg
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+*.class
+target/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.log
+
+# Testing
+coverage/
+.coverage
+.pytest_cache/
+.tox/
+htmlcov/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+tmp/
