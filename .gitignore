@@ -1,0 +1,61 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.sublime-*
+.project
+.classpath
+.settings/
+
+# Build Outputs
+dist/
+build/
+out/
+*.o
+*.so
+*.exe
+*.dll
+*.class
+
+# Dependencies
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+env/
+venv/
+.venv/
+
+# Log Files
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Test Coverage
+coverage/
+.nyc_output/
+*.cover
+.coverage
+htmlcov/
+
+# Temporary Files
+*.tmp
+*.temp
+.cache/
+tmp/
+temp/
