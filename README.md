@@ -1,5 +1,4 @@
 # foundation-demo
-# foundation-demo
 
 This repository demonstrates foundational concepts for application development.
 
@@ -19,15 +18,15 @@ This repository demonstrates foundational concepts for application development.
    ```
 3. Install dependencies:
    ```sh
-   <package manager> install
+   npm install
    ```
 4. Run the application:
    ```sh
-   <language> main.<ext>
+   node main.js
    ```
 
 ## Dependencies
-- Uses <package manager> for <language> dependencies.
+- Uses npm for Node.js dependencies.
 
 ## Contributing
 - Fork the repo and submit pull requests.
