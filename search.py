@@ -24,7 +24,6 @@ class SearchEngine:
         """
         self.case_sensitive = case_sensitive
         self.pattern_mode = pattern_mode
-        self.results = []
     
     def search_in_file(self, filepath, search_term):
         """
@@ -50,8 +49,9 @@ class SearchEngine:
                         search_target = search_term if self.case_sensitive else search_term.lower()
                         if search_target in search_line:
                             matches.append((line_num, line.rstrip()))
-        except Exception as e:
-            pass  # Skip files that can't be read
+        except (PermissionError, UnicodeDecodeError, IOError):
+            # Skip files that can't be read due to permissions or encoding issues
+            pass
         
         return matches
     
