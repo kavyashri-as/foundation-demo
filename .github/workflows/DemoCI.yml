@@ -33,29 +33,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
-      # Setup Node.js with caching for faster dependency installation
-      - name: Setup Node.js with caching
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
-        continue-on-error: true  # Continue if no package.json exists
-
-      # Cache node_modules and build artifacts for faster builds
-      - name: Cache dependencies and build outputs
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            node_modules
-            .cache
-          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-        continue-on-error: true
-
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
